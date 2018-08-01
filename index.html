@@ -16,11 +16,14 @@
 <div id="root"></div>
 <script type="text/babel">
     const Stars = (props) => {
+        const numberOfStars = 1 + Math.floor(Math.random()*9);
+        let stars = [];
+        for(let i=0; i<numberOfStars; i++){
+            stars.push(<i key={i} className="far fa-star"></i>)
+        }
          return (
              <div className="col-5">
-                 <i className="far fa-star"></i>
-                 <i className="far fa-star"></i>
-                 <i className="far fa-star"></i>
+                 {stars}
              </div>
     );
     }
