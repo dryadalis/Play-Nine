@@ -33,12 +33,12 @@
         switch (props.answerIsCorrect) {
             case true:
                 button =
-                <button className="btn btn-success" >
+                <button className="btn btn-success" onClick={props.acceptAnswer}>
                     <i className="fa fa-check"></i>
                 </button>
                 break;
             case false:
-                button = 
+                button =
                 <button className="btn btn-danger" >
                     <i className="fa fa-times"></i>
                 </button>
@@ -52,8 +52,13 @@
                     </button>
         }
         return (
-            <div className="col-2">
+            <div className="col-2 text-center">
                 {button}
+                <br /> <br/>
+                <button className="btn btn-warning btn-sm" onClick={props.redraw}
+                        disabled={props.redraws === 0}>
+                    <i className="fas fa-sync-alt"></i> {props.redraws}
+                </button>
             </div>
         );
     };
@@ -69,9 +74,12 @@
 
     const Numbers = (props) => {
         const numberClassName = (number) => {
-             if(props.selectedNumbers.indexOf(number) >= 0) {
-                 return 'selected';
+             if(props.usedNumbers.indexOf(number) >= 0) {
+                 return 'used';
              }
+            if(props.selectedNumbers.indexOf(number) >= 0) {
+                return 'selected';
+            }
         };
         return(
             <div className="card text-center ">
@@ -92,21 +100,36 @@
     }
     Numbers.list = arrayofNumbers;
 
+    const DoneFrame = (props) => {
+        return(
+          <div className="text-center">
+              <h2>{props.doneStatus}</h2>
+          </div>
+        );
+    };
+
+
 
     class Game extends React.Component {
+        static randomNumber = () => 1 + Math.floor(Math.random()*9);
         state = {
             selectedNumbers: [],
-            randomNumberOfStars: 1 + Math.floor(Math.random()*9),
+            randomNumberOfStars: Game.randomNumber(),
+            usedNumbers: [],
             answerIsCorrect: null,
+            redraws: 5,
+            doneStatus: null,
         };
         selectNumber = (clickedNumber) => {
             if (this.state.selectedNumbers.indexOf(clickedNumber) >= 0) {return;  }
             this.setState(prevState => ({
+                answerIsCorrect: null,
                 selectedNumbers: prevState.selectedNumbers.concat(clickedNumber)
             }));
         };
         unselectNumber = (clickedNumber) => {
           this.setState(prevState => ({
+              answerIsCorrect: null,
               selectedNumbers: prevState.selectedNumbers
                                         .filter(number => number !== clickedNumber)
           }))
@@ -117,8 +140,31 @@
                   prevState.selectedNumbers.reduce((acc, n) => acc + n, 0)
           }));
         };
+        acceptAnswer = () => {
+            this.setState(prevState => ({
+                usedNumbers: prevState.usedNumbers.concat(prevState.selectedNumbers),
+                selectedNumbers: [],
+                answerIsCorrect: null,
+                randomNumberOfStars: Game.randomNumber(),
+            }))
+        };
+        redraw = () => {
+            if (this.state.redraws === 0) { return; }
+            this.setState(prevState => ({
+                randomNumberOfStars: Game.randomNumber(),
+                answerIsCorrect: null,
+                selectedNumbers: [],
+                redraws: prevState.redraws - 1,
+            }));
+        };
         render() {
-            const {selectedNumbers, randomNumberOfStars, answerIsCorrect} = this.state;
+            const { selectedNumbers,
+                    randomNumberOfStars,
+                    answerIsCorrect,
+                    usedNumbers,
+                    redraws,
+                    doneStatus,
+                } = this.state;
             return(
                 <div className="container">
                     <h2>Play Nine</h2>
@@ -126,15 +172,24 @@
                     <div className="row">
                         <Stars numberOfStars={randomNumberOfStars}/>
                         <Button selectedNumbers={selectedNumbers}
+                                redraws={redraws}
                                 checkAnswer={this.checkAnswer}
-                                answerIsCorrect={answerIsCorrect} />
+                                answerIsCorrect={answerIsCorrect}
+                                acceptAnswer={this.acceptAnswer}
+                                redraw={this.redraw}
+                        />
                         <Answer selectedNumbers={selectedNumbers}
-                                unselectNumber = {this.unselectNumber}/>
+                                unselectNumber = {this.unselectNumber}
+                        />
                     </div>
                     <br />
-                    <Numbers selectedNumbers={selectedNumbers}
-                             selectNumbers={this.selectNumber}
-                    />
+                    {doneStatus ?
+                        <DoneFrame doneStatus={doneStatus}/> :
+                        <Numbers selectedNumbers={selectedNumbers}
+                                 selectNumbers={this.selectNumber}
+                                 usedNumbers={usedNumbers}
+                        />
+                    };
                 </div>
             );
         }
