@@ -1,17 +1,21 @@
+
 .fa-star {
     margin: 0.5rem;
-    font-size: 26px;
-    color: gold;
+    font-size: 28px;
+    color: #EFB509;
 }
 
 span {
     display: inline-block;
     margin: 0.5rem;
     text-align: center;
-    background-color: #ccc;
-    width: 26px;
-    border-radius: 50%;
+    background-color: #66A5AD;
+    width: 40px;
+    border: 2px solid #c4dfe6;
     cursor: pointer;
+    color: white;
+    font-size: large;
+    font-family: 'Kirang Haerang', sans-serif;
 }
 .selected {
     background-color: #eee;
@@ -22,4 +26,10 @@ span {
     background-color:#aaddaa;
     color: #99bb99;
     cursor: not-allowed;
+}
+.playNine {
+    margin-top: 1.25rem;
+    font-family: 'Kirang Haerang', sans-serif;
+    font-size: 55px;
+    color: #002C54;
 }
